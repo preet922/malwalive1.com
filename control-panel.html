@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Control Panel - Firebase Mobile Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+.font-rajdhani{font-family:'Rajdhani',sans-serif}
+.font-oswald{font-family:'Oswald',sans-serif}
+</style>
+
+<script>
+// AUTO EMBEDDED FIREBASE - MalwaLive1 - No manual setup needed
+const EMBEDDED_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCjdTdFWUniyDYRW1uxpx-J4-dC1_sMJ4I",
+  authDomain: "kabaddi-malwalive1.firebaseapp.com",
+  databaseURL: "https://kabaddi-malwalive1-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "kabaddi-malwalive1",
+  storageBucket: "kabaddi-malwalive1.firebasestorage.app",
+  messagingSenderId: "554753645526",
+  appId: "1:554753645526:web:9c44ae1ddd52bda0972277"
+};;
+try{ if(!localStorage.getItem('firebaseConfig')){ localStorage.setItem('firebaseConfig', JSON.stringify(EMBEDDED_FIREBASE_CONFIG)); } }catch(e){}
+</script>
+
+</head><body class="min-h-screen bg-[#0a0a0a] text-white">
+<!-- Firebase Setup Banner -->
+<div id="firebaseBanner" class="bg-[#1a1a1a] border-b border-[#ffcc00]/30 px-4 py-3">
+<div class="max-w-[1200px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
+<div><div class="font-oswald font-bold text-[14px] text-[#ffcc00]">🔥 FIREBASE MOBILE CONTROL - SETUP REQUIRED</div><div class="text-[11px] text-[#999] font-rajdhani">Firebase lagao → Mobile ton control karo • <span id="firebaseStatus" class="text-red-400">Not Connected</span></div></div>
+<button onclick="document.getElementById('setupModal').classList.remove('hidden')" class="bg-[#ffcc00] text-black font-bold text-[11px] px-3 py-1.5 rounded">SETUP FIREBASE</button>
+</div>
+</div>
+
+<!-- Setup Modal -->
+<div id="setupModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+<div class="bg-[#161616] border border-[#2a2a2a] rounded-[12px] p-6 max-w-[600px] w-full max-h-[90vh] overflow-y-auto">
+<h2 class="font-oswald font-bold text-[18px] text-[#ffcc00] mb-3">Firebase Setup - 2 Minute</h2>
+<div class="text-[12px] font-rajdhani text-[#ccc] space-y-3">
+<p><strong>Step 1:</strong> <a href="https://console.firebase.google.com" target="_blank" class="text-[#ffcc00] underline">console.firebase.google.com</a> → New Project → Name: kabaddi-live</p>
+<p><strong>Step 2:</strong> Realtime Database → Create Database → Start in test mode → Location: us-central1</p>
+<p><strong>Step 3:</strong> Project Settings → General → Your apps → Web app (</> icon) → Copy config</p>
+<p><strong>Step 4:</strong> Paste below config:</p>
+<textarea id="firebaseConfigInput" placeholder='Firebase console ton copy karo - eh tarah da:
+
+const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "kabaddi-live-xxxxx.firebaseapp.com",
+  databaseURL: "https://kabaddi-live-xxxxx-default-rtdb.firebaseio.com",
+  projectId: "kabaddi-live-xxxxx",
+  storageBucket: "kabaddi-live-xxxxx.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:xxxxx"
+};
+
+SIRF { } wala hissa vi chalega!' class="w-full h-[160px] bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2 text-[11px] font-mono"></textarea>
+<div id="firebaseError" class="text-[11px] text-red-400 mt-2 min-h-[20px]"></div>
+<button onclick="saveFirebaseConfig()" class="w-full bg-[#ffcc00] text-black font-bold py-2.5 rounded mt-2">✅ SAVE & CONNECT</button>
+<div class="grid grid-cols-2 gap-2 mt-2">
+<button onclick="clearFirebaseConfig()" class="bg-[#232323] text-white text-[11px] py-2 rounded">🗑️ Clear Config</button>
+<button onclick="useDemoFirebase()" class="bg-[#232323] text-white text-[11px] py-2 rounded">ℹ️ Help</button>
+</div>
+<p class="text-[10px] text-[#888] mt-3">Mobile link: <span id="mobileLink" class="text-[#ffcc00] break-all"></span></p>
+<p class="text-[10px] text-[#666] mt-1">Note: File:// protocol te Firebase kam nahi karda - HTTP server te chalao (Live Server / Netlify / GitHub Pages)</p>
+</div>
+<button onclick="document.getElementById('setupModal').classList.add('hidden')" class="absolute top-4 right-4 text-[#999]">✕</button>
+</div>
+</div>
+
+<div class="max-w-[1200px] mx-auto px-3 py-4">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3"><div class="w-10 h-10 bg-[#ffcc00] flex items-center justify-center font-oswald font-black text-black text-[20px] rounded">K</div><div><div class="font-oswald font-bold text-[16px]">MOBILE CONTROL PANEL</div><div class="text-[10px] text-[#888] font-rajdhani">Firebase • Score +0.5 • Show/Hide • Unlimited Weights</div></div></div>
+<div class="flex gap-2"><button onclick="resetAll()" class="border border-[#2a2a2a] text-[11px] px-3 py-1.5 rounded">RESET</button><span id="connectionDot" class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></span></div>
+</div>
+
+<!-- SHOW/HIDE -->
+<div class="bg-[#161616] border border-[#2a2a2a] rounded-[10px] p-3 mb-4">
+<h3 class="font-oswald font-bold text-[12px] text-[#ffcc00] tracking-widest mb-2">👁️ SHOW / HIDE</h3>
+<div class="grid grid-cols-4 gap-2">
+<label class="flex flex-col items-center gap-1 bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2"><input type="checkbox" id="showTopLeft" checked class="w-5 h-5 accent-[#ffcc00]"><span class="text-[10px]">Top Left</span></label>
+<label class="flex flex-col items-center gap-1 bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2"><input type="checkbox" id="showScoreboard" checked class="w-5 h-5 accent-[#ffcc00]"><span class="text-[10px]">Score</span></label>
+<label class="flex flex-col items-center gap-1 bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2"><input type="checkbox" id="showLowerthird" checked class="w-5 h-5 accent-[#ffcc00]"><span class="text-[10px]">Lower</span></label>
+<label class="flex flex-col items-center gap-1 bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2"><input type="checkbox" id="showTicker" checked class="w-5 h-5 accent-[#ffcc00]"><span class="text-[10px]">Ticker</span></label>
+</div>
+</div>
+
+<!-- SCOREBOARD +0.5 -->
+<div class="bg-[#161616] border border-[#ffcc00]/20 rounded-[10px] p-3 mb-4">
+<h3 class="font-oswald font-bold text-[12px] text-[#ffcc00] tracking-widest mb-3">🏆 SCOREBOARD • MOBILE +0.5 +1 +2</h3>
+<div class="space-y-3">
+<div class="bg-[#0e0e0e] border border-[#2a2a2a] rounded p-3">
+<div class="flex items-center justify-between"><input id="teamA" value="LONGOWAL" class="flex-1 bg-[#161616] border border-[#2a2a2a] rounded px-2 py-2 font-bold text-[14px]"><span class="mx-2 font-oswald font-black text-[20px]" id="scoreADisplay">0</span></div>
+<input type="hidden" id="scoreA" value="0">
+<div class="grid grid-cols-5 gap-1 mt-2">
+<button onclick="addScore('scoreA',0.5)" class="bg-[#ffcc00] text-black font-black text-[13px] py-2 rounded">+0.5</button>
+<button onclick="addScore('scoreA',1)" class="bg-[#ffcc00]/80 text-black font-black text-[13px] py-2 rounded">+1</button>
+<button onclick="addScore('scoreA',2)" class="bg-[#ffcc00]/60 text-black font-black text-[13px] py-2 rounded">+2</button>
+<button onclick="addScore('scoreA',-0.5)" class="bg-[#333] text-white font-bold text-[13px] py-2 rounded">-0.5</button>
+<button onclick="addScore('scoreA',-1)" class="bg-[#222] text-white font-bold text-[13px] py-2 rounded">-1</button>
+</div>
+</div>
+<div class="bg-[#0e0e0e] border border-[#2a2a2a] rounded p-3">
+<div class="flex items-center justify-between"><input id="teamB" value="NIZAMPUR" class="flex-1 bg-[#161616] border border-[#2a2a2a] rounded px-2 py-2 font-bold text-[14px]"><span class="mx-2 font-oswald font-black text-[20px]" id="scoreBDisplay">0</span></div>
+<input type="hidden" id="scoreB" value="0">
+<div class="grid grid-cols-5 gap-1 mt-2">
+<button onclick="addScore('scoreB',0.5)" class="bg-[#ffcc00] text-black font-black text-[13px] py-2 rounded">+0.5</button>
+<button onclick="addScore('scoreB',1)" class="bg-[#ffcc00]/80 text-black font-black text-[13px] py-2 rounded">+1</button>
+<button onclick="addScore('scoreB',2)" class="bg-[#ffcc00]/60 text-black font-black text-[13px] py-2 rounded">+2</button>
+<button onclick="addScore('scoreB',-0.5)" class="bg-[#333] text-white font-bold text-[13px] py-2 rounded">-0.5</button>
+<button onclick="addScore('scoreB',-1)" class="bg-[#222] text-white font-bold text-[13px] py-2 rounded">-1</button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2"><button onclick="resetScores()" class="bg-[#232323] text-[12px] font-bold py-2 rounded">RESET SCORES</button><button onclick="swapTeams()" class="bg-[#232323] text-[12px] font-bold py-2 rounded">SWAP TEAMS</button></div>
+<input id="subtitle" value="KABADDI CUP FINAL" class="w-full bg-[#0e0e0e] border border-[#2a2a2a] rounded px-3 py-2 text-[12px] mt-2" placeholder="Subtitle"><div class="flex gap-2 mt-2"><input id="scoreSub" value="FINAL" class="flex-1 bg-[#0e0e0e] border border-[#2a2a2a] rounded px-3 py-2 text-[12px]" placeholder="Score Center - FINAL / LIVE / HALF"><input id="topTitleLine2" value="" class="flex-1 bg-[#0e0e0e] border border-[#2a2a2a] rounded px-3 py-2 text-[12px] hidden" placeholder=""></div>
+</div>
+</div>
+
+<!-- PIND + YOUTUBE + CONTACT -->
+<div class="bg-[#161616] border border-[#2a2a2a] rounded-[10px] p-3 mb-4">
+<h3 class="font-oswald font-bold text-[12px] text-[#ffcc00] tracking-widest mb-2">📍 TOURNAMENT + YOUTUBE + CONTACT</h3>
+<div class="space-y-2">
+<input id="topTitle" value="KABADDI SPORTS" class="w-full bg-[#0e0e0e] border border-[#2a2a2a] rounded px-3 py-2.5 text-[13px]" placeholder="Top Title">
+<input id="liveText" value="LIVE" class="w-full bg-[#0e0e0e] border border-[#2a2a2a] rounded px-3 py-2.5 text-[13px]" placeholder="LIVE Text">
+<input id="tourn1" value="ਪਿੰਡ ਲੌਂਗੋਵਾਲ ਕਬੱਡੀ ਕੱਪ" class="w-full bg-[#0e0e0e] border border-[#2a2a2a] rounded px-3 py-2.5 text-[13px]" placeholder="Pind Punjabi">
+<input id="tourn2" value="LONGOWAL KABADDI CUP 2025" class="w-full bg-[#0e0e0e] border border-[#2a2a2a] rounded px-3 py-2.5 text-[13px]" placeholder="Tournament English">
+<input id="youtube" value="KABADDI SPORTS LIVE" class="w-full bg-[#0e0e0e] border border-[#2a2a2a] rounded px-3 py-2.5 text-[13px]" placeholder="YouTube Channel">
+<input id="contact" value="CONTACT: 98765-43210" class="w-full bg-[#0e0e0e] border border-[#2a2a2a] rounded px-3 py-2.5 text-[13px]" placeholder="Contact">
+</div>
+</div>
+
+<!-- TICKER EXTRA BOLD -->
+<div class="bg-[#161616] border border-[#ffcc00]/30 rounded-[10px] p-3 mb-4">
+<h3 class="font-oswald font-bold text-[12px] text-[#ffcc00] tracking-widest mb-2">📢 TICKER • EXTRA BOLD • RIGHT TO LEFT</h3>
+<textarea id="bottomTicker" class="w-full bg-[#0e0e0e] border border-[#2a2a2a] rounded px-3 py-2 text-[12px] h-[60px]">ਵਧੀਆ ਕਬੱਡੀ ਮੈਚ ਦਾ ਅਨੰਦ ਮਾਣੋ | ENJOY THE BEST KABADDI ACTION LIVE • YOUTUBE: KABADDI SPORTS LIVE</textarea>
+<div class="grid grid-cols-2 gap-2 mt-2">
+<div><label class="text-[10px] text-[#888]">Speed: <span id="tickerSpeedVal">18s</span></label><input type="range" id="tickerSpeed" min="5" max="40" value="18" class="w-full accent-[#ffcc00]"></div>
+<div><label class="text-[10px] text-[#888]">Font: <span id="tickerFontVal">18px</span></label><input type="range" id="tickerFont" min="12" max="36" value="18" class="w-full accent-[#ffcc00]"></div>
+</div>
+<div class="flex gap-3 mt-2"><label class="flex items-center gap-1"><input type="checkbox" id="tickerBold" checked class="accent-[#ffcc00]"><span class="text-[11px]">EXTRA BOLD</span></label><label class="flex items-center gap-1"><input type="checkbox" id="tickerUpper" class="accent-[#ffcc00]"><span class="text-[11px]">UPPERCASE</span></label></div>
+</div>
+
+<!-- WEIGHTS UNLIMITED -->
+<div class="bg-[#161616] border border-[#2a2a2a] rounded-[10px] p-3 mb-4">
+<div class="flex items-center justify-between mb-2"><h3 class="font-oswald font-bold text-[12px] text-[#ffcc00] tracking-widest">🏆 WEIGHTS • UNLIMITED</h3><button onclick="addWeight()" class="bg-[#ffcc00] text-black font-bold text-[11px] px-3 py-1.5 rounded">+ ADD</button></div>
+<div id="weightList" class="space-y-2"></div>
+</div>
+
+
+<!-- THEME COLORS - NEW -->
+<div class="bg-[#161616] border border-[#ffcc00]/30 rounded-[10px] p-3 mb-4">
+<h3 class="font-oswald font-bold text-[12px] text-[#ffcc00] tracking-widest mb-3">🎨 THEME • OVERLAY COLORS</h3>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2"><label class="text-[10px] text-[#888] block mb-1">Primary BG (#0a2a6b)</label><div class="flex gap-2"><input type="color" id="themePrimary" value="#0a2a6b" class="w-10 h-8 rounded"><input id="themePrimaryText" value="#0a2a6b" class="flex-1 bg-[#161616] border border-[#2a2a2a] rounded px-2 py-1 text-[11px]" placeholder="#0a2a6b"></div></div>
+<div class="bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2"><label class="text-[10px] text-[#888] block mb-1">Secondary / Yellow</label><div class="flex gap-2"><input type="color" id="themeSecondary" value="#ffcc00" class="w-10 h-8 rounded"><input id="themeSecondaryText" value="#ffcc00" class="flex-1 bg-[#161616] border border-[#2a2a2a] rounded px-2 py-1 text-[11px]"></div></div>
+<div class="bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2"><label class="text-[10px] text-[#888] block mb-1">Breaking Box (RED)</label><div class="flex gap-2"><input type="color" id="themeBreakingBg" value="#cc0000" class="w-10 h-8 rounded"><input id="themeBreakingBgText" value="#cc0000" class="flex-1 bg-[#161616] border border-[#2a2a2a] rounded px-2 py-1 text-[11px]"></div></div>
+<div class="bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2"><label class="text-[10px] text-[#888] block mb-1">Ticker BG</label><div class="flex gap-2"><input type="color" id="themeTickerBg" value="#ffffff" class="w-10 h-8 rounded"><input id="themeTickerBgText" value="#ffffff" class="flex-1 bg-[#161616] border border-[#2a2a2a] rounded px-2 py-1 text-[11px]"></div></div>
+<div class="bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2 col-span-2"><label class="text-[10px] text-[#888] block mb-1">Ticker Text Color</label><div class="flex gap-2"><input type="color" id="themeTickerText" value="#000000" class="w-10 h-8 rounded"><input id="themeTickerTextText" value="#000000" class="flex-1 bg-[#161616] border border-[#2a2a2a] rounded px-2 py-1 text-[11px]"><button onclick="resetTheme()" class="bg-[#232323] text-[10px] px-2 py-1 rounded">RESET THEME</button></div></div>
+</div>
+<div class="text-[10px] text-[#666] mt-2">Top Left, Scoreboard, Lower Blue Bar = Primary • Yellow Strip & Accents = Secondary • Breaking Box hun RED ho gaya</div>
+</div>
+
+
+<!-- FONT SIZE CONTROLS -->
+<div class="bg-[#161616] border border-[#2a2a2a] rounded-[10px] p-3 mb-20">
+<h3 class="font-oswald font-bold text-[12px] text-[#ffcc00] tracking-widest mb-2">🔤 FONT SIZE + BOLD CONTROLS</h3>
+<div class="grid grid-cols-2 gap-3 text-[10px]">
+<div><label>Team Size: <span id="teamFontVal">38px</span></label><input type="range" id="teamFont" min="20" max="60" value="38" class="w-full accent-[#ffcc00]"><label class="flex items-center gap-1"><input type="checkbox" id="teamBold" checked class="accent-[#ffcc00]"><span>BOLD</span></label></div>
+<div><label>Score Size: <span id="scoreFontVal">48px</span></label><input type="range" id="scoreFont" min="24" max="80" value="48" class="w-full accent-[#ffcc00]"><label class="flex items-center gap-1"><input type="checkbox" id="scoreBold" checked class="accent-[#ffcc00]"><span>BOLD</span></label></div>
+<div><label>Pind Punjabi: <span id="pindPunjabiFontVal">26px</span></label><input type="range" id="pindPunjabiFont" min="14" max="50" value="26" class="w-full accent-[#ffcc00]"></div>
+<div><label>Pind English: <span id="pindEngFontVal">20px</span></label><input type="range" id="pindEngFont" min="12" max="40" value="20" class="w-full accent-[#ffcc00]"></div>
+<div><label>Prize Label: <span id="weightLabelFontVal">20px</span></label><input type="range" id="weightLabelFont" min="12" max="40" value="20" class="w-full accent-[#ffcc00]"></div>
+<div><label>Prize: <span id="weightPrizeFontVal">26px</span></label><input type="range" id="weightPrizeFont" min="14" max="50" value="26" class="w-full accent-[#ffcc00]"></div>
+</div>
+</div>
+</div>
+
+<script>
+let defaultWeights=[{id:'w1', label:'45 KG', prize1:'1st: 11,000/-', prize2:'2nd: 8,000/-', show:true},{id:'w2', label:'55 KG', prize1:'1st: 15,000/-', prize2:'2nd: 10,000/-', show:true},{id:'w3', label:'65 KG', prize1:'1st: 21,000/-', prize2:'2nd: 15,000/-', show:true},{id:'w4', label:'72 KG', prize1:'1st: 31,000/-', prize2:'2nd: 21,000/-', show:true},{id:'w5', label:'80 KG', prize1:'1st: 51,000/-', prize2:'2nd: 31,000/-', show:true},{id:'w6', label:'OPEN', prize1:'1st: 1,00,000/-', prize2:'2nd: 75,000/-', show:true},];
+let weights=[]; let firebaseApp=null, db=null, dbRef=null, isFirebase=false;
+const $=id=>document.getElementById(id);
+
+function initFirebase(){
+  // Use embedded if no manual config
+  try{
+    let stored = localStorage.getItem('firebaseConfig');
+    if(!stored){
+      localStorage.setItem('firebaseConfig', JSON.stringify(EMBEDDED_FIREBASE_CONFIG));
+    }
+  }catch(e){}
+
+ try{
+  let cfgStr=localStorage.getItem('firebaseConfig');
+  if(!cfgStr){
+   $('firebaseStatus').textContent='Local Mode - Firebase Setup Karo Mobile Layi';
+   $('firebaseStatus').className='text-yellow-400';
+   $('connectionDot').className='w-3 h-3 bg-yellow-500 rounded-full animate-pulse';
+   console.log('No Firebase config - using localStorage mode');
+   return;
+  }
+  let cfg=JSON.parse(cfgStr);
+  if(!cfg.apiKey || !cfg.databaseURL){ $('firebaseStatus').textContent='Config Incomplete - databaseURL chahida'; $('firebaseStatus').className='text-red-400'; return; }
+  // Check if firebase SDK loaded
+  if(typeof firebase==='undefined'){ $('firebaseStatus').textContent='Firebase SDK not loaded - Internet check karo'; return; }
+  if(!firebase.apps.length) firebaseApp=firebase.initializeApp(cfg);
+  else firebaseApp=firebase.app();
+  db=firebase.database();
+  dbRef=db.ref('kabaddi_control');
+  isFirebase=true;
+  $('firebaseStatus').textContent='Connected ✓ Firebase • Mobile Ready';
+  $('firebaseStatus').className='text-green-400';
+  $('connectionDot').className='w-3 h-3 bg-green-500 rounded-full animate-pulse';
+  $('mobileLink').textContent=window.location.href;
+  // Test connection
+  dbRef.child('__test').set({time: Date.now()}).then(()=>{ console.log('Firebase write test OK'); }).catch(e=>{ $('firebaseStatus').textContent='Write Failed: '+e.message+' - Rules check karo'; $('firebaseStatus').className='text-red-400'; });
+  // Listen
+  dbRef.on('value', snap=>{
+   let d=snap.val(); if(!d || !d.teamA) return;
+   // Avoid loop - only update if different
+   let current = JSON.parse(localStorage.getItem('kabaddi_control')||'{}');
+   if(JSON.stringify(current)===JSON.stringify(d)) return;
+   if(d.teamA) $('teamA').value=d.teamA; if(d.teamB) $('teamB').value=d.teamB;
+   if(d.scoreA!==undefined){$('scoreA').value=d.scoreA; $('scoreADisplay').textContent=d.scoreA;}
+   if(d.scoreB!==undefined){$('scoreB').value=d.scoreB; $('scoreBDisplay').textContent=d.scoreB;}
+   if(d.topTitle) $('topTitle').value=d.topTitle; if(d.liveText) $('liveText').value=d.liveText; if(d.scoreSub && $('scoreSub')) $('scoreSub').value=d.scoreSub; if(d.themePrimary && $('themePrimary')) $('themePrimary').value=d.themePrimary; if(d.themeSecondary && $('themeSecondary')) $('themeSecondary').value=d.themeSecondary; if(d.themeBreakingBg && $('themeBreakingBg')) $('themeBreakingBg').value=d.themeBreakingBg; if(d.themeTickerBg && $('themeTickerBg')) $('themeTickerBg').value=d.themeTickerBg; if(d.themeTickerText && $('themeTickerText')) $('themeTickerText').value=d.themeTickerText;
+   if(d.tourn1) $('tourn1').value=d.tourn1; if(d.tourn2) $('tourn2').value=d.tourn2;
+   if(d.contact) $('contact').value=d.contact; if(d.youtube) $('youtube').value=d.youtube;
+   if(d.bottomTicker) $('bottomTicker').value=d.bottomTicker; 
+   if(d.weights && JSON.stringify(d.weights)!==JSON.stringify(weights)) {weights=d.weights; renderWeightList();}
+   localStorage.setItem('kabaddi_control', JSON.stringify(d));
+  }, err=>{ $('firebaseStatus').textContent='Listen Error: '+err.message; $('firebaseStatus').className='text-red-400'; });
+ }catch(e){ console.log('Firebase init failed',e); $('firebaseStatus').textContent='Error: '+e.message; $('firebaseStatus').className='text-red-400'; $('firebaseError').textContent=e.message; }
+}
+
+function saveFirebaseConfig(){
+ try{
+  let txt=$('firebaseConfigInput').value.trim();
+  if(!txt){alert('Paste config - Firebase console ton copy karo'); return;}
+  $('firebaseError').textContent='Checking...';
+  let cfg=null;
+  // Extract object
+  let objMatch = txt.match(/\{[\s\S]*\}/);
+  if(!objMatch){ $('firebaseError').textContent='Error: { } brackets nahi mile - pura config paste karo'; alert('Error: Config ch { } nahi mile'); return; }
+  let objStr = objMatch[0];
+  // Clean: remove trailing commas, replace single quotes with double, remove comments
+  objStr = objStr.replace(/\/\/.*$/gm,'').replace(/\/\*[\s\S]*?\*\//g,'');
+  objStr = objStr.replace(/'/g,'"');
+  objStr = objStr.replace(/,(\s*[\}\]])/g,'$1');
+  // Quote unquoted keys: apiKey: -> "apiKey":
+  objStr = objStr.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g,'$1"$2":');
+  try{
+   cfg=JSON.parse(objStr);
+  }catch(e){
+   $('firebaseError').textContent='JSON Parse Error: '+e.message+' - Manual check karo';
+   // Try eval as fallback (safe for config)
+   try{ cfg = (new Function('return '+objMatch[0]))(); }catch(e2){ alert('Parse failed: '+e.message+'\n\nFirebase console ton sirf { ... } wala hissa copy karo, const line nahi'); return; }
+  }
+  if(!cfg || !cfg.apiKey){ $('firebaseError').textContent='apiKey missing - sahi config paste karo'; alert('Invalid config - apiKey missing'); return; }
+  // If databaseURL missing, construct it
+  if(!cfg.databaseURL && cfg.projectId){
+   cfg.databaseURL = 'https://'+cfg.projectId+'-default-rtdb.firebaseio.com';
+   console.log('Constructed databaseURL:', cfg.databaseURL);
+  }
+  if(!cfg.databaseURL && EMBEDDED_FIREBASE_CONFIG.databaseURL){ cfg.databaseURL=EMBEDDED_FIREBASE_CONFIG.databaseURL; }
+  if(!cfg.databaseURL){ $('firebaseError').textContent='databaseURL missing - Realtime Database banao pehla'; alert('databaseURL missing!\n\nStep: Firebase console > Realtime Database > Create Database > Start in test mode'); return; }
+  localStorage.setItem('firebaseConfig', JSON.stringify(cfg));
+  document.getElementById('setupModal').classList.add('hidden');
+  $('firebaseError').textContent='';
+  initFirebase();
+  alert('✅ Firebase Connected!\n\nHun mobile te same file kholo - auto sync hou!');
+ }catch(e){ document.getElementById('firebaseError').textContent='Error: '+e.message; alert('Error: '+e.message); }
+}
+
+function clearFirebaseConfig(){
+ if(confirm('Firebase config delete karna?')){ localStorage.removeItem('firebaseConfig'); location.reload(); }
+}
+
+function useDemoFirebase(){
+ // Demo config for testing - user can use this instantly without creating own project
+ let demoCfg = {
+   apiKey: "AIzaSyDemoKeyForTestingOnly",
+   authDomain: "kabaddi-live-demo.firebaseapp.com",
+   databaseURL: "https://kabaddi-live-demo-default-rtdb.firebaseio.com",
+   projectId: "kabaddi-live-demo",
+   storageBucket: "kabaddi-live-demo.appspot.com",
+   messagingSenderId: "123456789",
+   appId: "1:123456789:web:abcdef"
+ };
+ alert('Demo config sirf testing layi hai - Real project layi apna config banao\n\nFirebase Console > New Project > Realtime Database > Create');
+ // For now, use localStorage mode - Firebase optional hai
+ $('firebaseStatus').textContent='Demo Mode - localStorage (Firebase optional)';
+}
+
+
+function save(){
+ let d={
+  topTitle:$('topTitle').value, liveText:$('liveText').value, teamA:$('teamA').value, teamB:$('teamB').value, scoreA:$('scoreA').value, scoreB:$('scoreB').value, scoreSub:$('scoreSub')?$('scoreSub').value:'FINAL', subtitle:$('subtitle')?$('subtitle').value:'KABADDI CUP FINAL', tourn1:$('tourn1').value, tourn2:$('tourn2').value, contact:$('contact').value, youtube:$('youtube').value, bottomTicker:$('bottomTicker').value, weights:weights,
+  themePrimary:$('themePrimary')?$('themePrimary').value:'#0a2a6b', themeSecondary:$('themeSecondary')?$('themeSecondary').value:'#ffcc00', themeBreakingBg:$('themeBreakingBg')?$('themeBreakingBg').value:'#cc0000', themeTickerBg:$('themeTickerBg')?$('themeTickerBg').value:'#ffffff', themeTickerText:$('themeTickerText')?$('themeTickerText').value:'#000000',
+  showTopLeft:$('showTopLeft').checked, showScoreboard:$('showScoreboard').checked, showLowerthird:$('showLowerthird').checked, showTicker:$('showTicker').checked,
+  teamFont:$('teamFont').value, scoreFont:$('scoreFont').value, teamBold:$('teamBold').checked, scoreBold:$('scoreBold').checked,
+  topFont:'40', liveFont:'26', pindPunjabiFont:$('pindPunjabiFont').value, pindEngFont:$('pindEngFont').value, youtubeFont:'22', contactFont:'18',
+  tickerFont:$('tickerFont').value, tickerSpeed:$('tickerSpeed').value, tickerBold:$('tickerBold').checked, tickerUpper:$('tickerUpper').checked,
+  weightLabelFont:$('weightLabelFont').value, weightPrizeFont:$('weightPrizeFont').value, weightLabelBold:true, weightPrizeBold:true, weightSpeed:'3', lowerHeight:'160', yellowThick:'3', pindSpeed:'10', teamSpeed:'8', weightFadeOn:true,
+ };
+ localStorage.setItem('kabaddi_control', JSON.stringify(d));
+ if(isFirebase && dbRef){ dbRef.set(d).catch(e=>console.log('Firebase save error',e)); }
+ // Update displays
+ $('scoreADisplay').textContent=d.scoreA; $('scoreBDisplay').textContent=d.scoreB;
+}
+
+function renderWeightList(){
+ const cont=$('weightList'); cont.innerHTML='';
+ weights.forEach((w,i)=>{
+  const div=document.createElement('div');
+  div.className='flex items-center gap-1 bg-[#0e0e0e] border border-[#2a2a2a] rounded p-2';
+  div.innerHTML=`<input type="checkbox" ${w.show?'checked':''} onchange="toggleWeight(${i},this.checked)" class="w-5 h-5 accent-[#ffcc00]"><input value="${w.label}" onchange="editWeight(${i},'label',this.value)" class="w-[70px] bg-[#161616] border border-[#2a2a2a] rounded px-2 py-2 font-bold text-[12px]"><input value="${w.prize1}" onchange="editWeight(${i},'prize1',this.value)" class="flex-1 bg-[#161616] border border-[#2a2a2a] rounded px-2 py-2 text-[11px]"><input value="${w.prize2}" onchange="editWeight(${i},'prize2',this.value)" class="flex-1 bg-[#161616] border border-[#2a2a2a] rounded px-2 py-2 text-[11px]"><button onclick="removeWeight(${i})" class="w-8 h-8 bg-[#232323] hover:bg-red-600 rounded">✕</button>`;
+  cont.appendChild(div);
+ });
+}
+function toggleWeight(i,show){weights[i].show=show; save();}
+function editWeight(i,key,val){weights[i][key]=val; save();}
+function addWeight(){weights.push({id:'w'+Date.now(), label:'90 KG', prize1:'1st: 15,000/-', prize2:'2nd: 10,000/-', show:true}); renderWeightList(); save();}
+function removeWeight(i){weights.splice(i,1); renderWeightList(); save();}
+function addScore(id,delta){let el=$(id); let v=parseFloat(el.value)||0; v=v+delta; v=Math.round(v*10)/10; el.value=v; if(id==='scoreA') $('scoreADisplay').textContent=v; else $('scoreBDisplay').textContent=v; save();}
+function resetScores(){$('scoreA').value=0; $('scoreB').value=0; $('scoreADisplay').textContent='0'; $('scoreBDisplay').textContent='0'; save();}
+function swapTeams(){let a=$('teamA').value, b=$('teamB').value, sa=$('scoreA').value, sb=$('scoreB').value; $('teamA').value=b; $('teamB').value=a; $('scoreA').value=sb; $('scoreB').value=sa; $('scoreADisplay').textContent=sb; $('scoreBDisplay').textContent=sa; save();}
+function resetTheme(){ $('themePrimary').value='#0a2a6b'; $('themeSecondary').value='#ffcc00'; $('themeBreakingBg').value='#cc0000'; $('themeTickerBg').value='#ffffff'; $('themeTickerText').value='#000000'; if($('themePrimaryText')) $('themePrimaryText').value='#0a2a6b'; if($('themeSecondaryText')) $('themeSecondaryText').value='#ffcc00'; if($('themeBreakingBgText')) $('themeBreakingBgText').value='#cc0000'; if($('themeTickerBgText')) $('themeTickerBgText').value='#ffffff'; if($('themeTickerTextText')) $('themeTickerTextText').value='#000000'; save(); }
+function resetAll(){weights=JSON.parse(JSON.stringify(defaultWeights)); $('topTitle').value='KABADDI SPORTS'; if($('scoreSub')) $('scoreSub').value='FINAL'; $('liveText').value='LIVE'; $('teamA').value='LONGOWAL'; $('teamB').value='NIZAMPUR'; $('scoreA').value='0'; $('scoreB').value='0'; $('scoreADisplay').textContent='0'; $('scoreBDisplay').textContent='0'; $('tourn1').value='ਪਿੰਡ ਲੌਂਗੋਵਾਲ ਕਬੱਡੀ ਕੱਪ'; $('tourn2').value='LONGOWAL KABADDI CUP 2025'; $('contact').value='CONTACT: 98765-43210'; $('youtube').value='KABADDI SPORTS LIVE'; $('bottomTicker').value='ਵਧੀਆ ਕਬੱਡੀ ਮੈਚ ਦਾ ਅਨੰਦ ਮਾਣੋ | ENJOY THE BEST KABADDI ACTION LIVE'; resetTheme(); renderWeightList(); save();}
+
+// Load
+try{let d=JSON.parse(localStorage.getItem('kabaddi_control')||'{}'); if(d.weights) weights=d.weights; else weights=JSON.parse(JSON.stringify(defaultWeights));}catch(e){weights=JSON.parse(JSON.stringify(defaultWeights));}
+document.querySelectorAll('input').forEach(i=>{if(i.type==='text' || i.type==='number' || i.type==='checkbox' && !i.id.includes('show')){}});
+
+['showTopLeft','showScoreboard','showLowerthird','showTicker'].forEach(id=>{$(id).addEventListener('change',save);});
+['topTitle','liveText','teamA','teamB','scoreSub','tourn1','tourn2','youtube','contact','bottomTicker','subtitle','themePrimary','themeSecondary','themeBreakingBg','themeTickerBg','themeTickerText'].forEach(id=>{let el=$(id); if(el) el.addEventListener('input',save);});
+['themePrimary','themeSecondary','themeBreakingBg','themeTickerBg','themeTickerText'].forEach(id=>{let el=$(id); if(el) el.addEventListener('input',()=>{ let txt=document.getElementById(id+'Text'); if(txt) txt.value=el.value; save(); });});
+['themePrimaryText','themeSecondaryText','themeBreakingBgText','themeTickerBgText','themeTickerTextText'].forEach(id=>{let el=$(id); if(el) el.addEventListener('input',()=>{ let base=id.replace('Text',''); let col=document.getElementById(base); if(col) col.value=el.value; save(); });});
+['teamFont','scoreFont','pindPunjabiFont','pindEngFont','tickerFont','tickerSpeed','weightLabelFont','weightPrizeFont'].forEach(id=>{let el=$(id); if(el) el.addEventListener('input',()=>{let valEl=$(id+'Val'); if(valEl) valEl.textContent=el.value+(id.includes('Speed')?'s':'px'); save();});});
+
+renderWeightList();
+initFirebase();
+save();
+</script></body></html>

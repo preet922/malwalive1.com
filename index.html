@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kabaddi Sports Live - Website</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+.font-rajdhani{font-family:Rajdhani}
+.font-oswald{font-family:Oswald}
+</style>
+</head>
+<body class="min-h-screen bg-[#080b14] text-white font-rajdhani">
+<!-- Header -->
+<div class="bg-[#0a2a6b] border-b-4 border-[#ffcc00] px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-[#ffcc00] text-black font-oswald font-black text-[24px] flex items-center justify-center rounded">K</div>
+<div>
+<div class="font-oswald font-black text-[22px] tracking-wide">KABADDI <span class="text-[#ffcc00]">SPORTS</span> LIVE</div>
+<div class="text-[11px] text-white/60 tracking-[0.2em]">MALWALIVE1.COM • OFFICIAL CONTROL WEBSITE</div>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-2 text-[10px] bg-black/30 px-3 py-1.5 rounded-full border border-white/10"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> OBS READY • FIREBASE SYNC</div>
+</div>
+
+<div class="max-w-[1200px] mx-auto p-4 md:p-8">
+<div class="grid md:grid-cols-2 gap-6 mt-6">
+<!-- Control Panel Card -->
+<div class="bg-[#161616] border border-[#ffcc00]/30 rounded-[16px] p-6 relative overflow-hidden group hover:border-[#ffcc00]/60 transition">
+<div class="absolute top-0 right-0 w-32 h-32 bg-[#ffcc00]/10 rounded-full blur-[30px]"></div>
+<div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 bg-[#ffcc00] rounded-[10px] flex items-center justify-center text-black text-[18px]">🎛️</div><h2 class="font-oswald font-bold text-[18px]">CONTROL PANEL</h2></div>
+<p class="text-[13px] text-[#aaa] leading-[1.5] mb-4">Scoreboard, Top Left (KABADDI SPORTS), FINAL/LIVE text, Theme Colors, Ticker, Pind, Prize - sab kuch mobile ton control karo. Firebase nal auto sync.</p>
+<ul class="text-[11px] text-[#777] space-y-1 mb-6 list-disc pl-4">
+<li>Top Left editable - KABADDI SPORTS hun change hunda</li>
+<li>FINAL editable - Scoreboard center text</li>
+<li>Theme Colors - Primary, Secondary, Breaking Red, Ticker</li>
+<li>Score +0.5, +1, +2 buttons</li>
+</ul>
+<a href="./control-panel.html" target="_blank" class="block w-full bg-[#ffcc00] text-black font-oswald font-black text-center py-3 rounded-[10px] hover:bg-[#ffd84d] transition">OPEN CONTROL PANEL →</a>
+<div class="mt-3 text-[10px] text-[#555] text-center">File: control-panel.html • Mobile friendly</div>
+</div>
+
+<!-- Overlay Card -->
+<div class="bg-[#0e152a] border border-white/10 rounded-[16px] p-6 relative overflow-hidden group hover:border-white/20 transition">
+<div class="absolute top-0 right-0 w-32 h-32 bg-[#0a2a6b]/50 rounded-full blur-[30px]"></div>
+<div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 bg-white rounded-[10px] flex items-center justify-center text-black text-[18px]">📺</div><h2 class="font-oswald font-bold text-[18px]">OVERLAY - OBS</h2></div>
+<p class="text-[13px] text-[#aaa] leading-[1.5] mb-4">1920x1080 transparent overlay. OBS Browser Source vich pao. Ticker hun proper left-to-right scroll karda, Breaking box RED.</p>
+<ul class="text-[11px] text-[#777] space-y-1 mb-6 list-disc pl-4">
+<li>Transparent background - OBS ready</li>
+<li>Fixed ticker scroll - center ton nahi, right ton start</li>
+<li>Breaking Box - RED (#cc0000)</li>
+<li>Theme support - Control Panel ton color change</li>
+</ul>
+<a href="./overlay.html" target="_blank" class="block w-full bg-white text-black font-oswald font-black text-center py-3 rounded-[10px] hover:bg-gray-100 transition">OPEN OVERLAY →</a>
+<div class="mt-3 text-[10px] text-[#555] text-center">File: overlay.html • 1920x1080 • Add as Browser Source</div>
+</div>
+</div>
+
+<!-- How to use -->
+<div class="mt-8 bg-[#121212] border border-[#2a2a2a] rounded-[12px] p-5">
+<h3 class="font-oswald font-bold text-[14px] text-[#ffcc00] mb-3">⚡ KIVE USE KARNA - 2 MINUTE SETUP</h3>
+<div class="grid md:grid-cols-3 gap-4 text-[12px]">
+<div class="bg-[#0e0e0e] rounded p-3 border border-[#222]"><div class="font-bold text-white mb-1">1. OBS vich Overlay pao</div><div class="text-[#888]">OBS → Sources → + → Browser Source → URL: overlay.html → Width 1920 Height 1080 → OK</div></div>
+<div class="bg-[#0e0e0e] rounded p-3 border border-[#222]"><div class="font-bold text-white mb-1">2. Control Panel kholo</div><div class="text-[#888]">Is website ton CONTROL PANEL button dabao. Mobile te vi khul sakda. Team, Score, FINAL, Top Left, Theme sab change karo.</div></div>
+<div class="bg-[#0e0e0e] rounded p-3 border border-[#222]"><div class="font-bold text-white mb-1">3. Firebase AUTO CONNECTED ✅</div><div class="text-[#888]">Teri Firebase key auto embed ho gayi hai - OBS/vMix Browser Source khud hi update ho jau. Manual setup di lod nahi!</div></div></div>
+</div>
+</div>
+
+<!-- Footer -->
+<div class="mt-8 text-center text-[11px] text-[#555]">
+<div>Built for MalwaLive1.com • Kabaddi Sports Live • Punjab</div>
+<div class="mt-1">Overlay Colors: Primary #0a2a6b, Secondary #ffcc00, Breaking RED #cc0000 - Control Panel ton change kar sakde ho</div>
+</div>
+</div>
+</body>
+</html>
